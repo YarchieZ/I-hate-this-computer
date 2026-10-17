@@ -6,16 +6,19 @@ public class KeyCapManager : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private KeyCap[] keycaps;
+    [SerializeField] private AudioClip[] audioClips;
     [SerializeField] private TextMeshPro targetText;
     [SerializeField] private float rayDistance = 10f;
-
+    private AudioSource audioSource;
     private KeyCap currentHoveredKeycap;
 
     private void OnEnable()
     {
+        audioSource = GetComponent<AudioSource>();
         foreach (var keycap in keycaps)
         {
             keycap.OnPressed += HandleKeycapPressed;
+            keycap.OnPressedEarly += EarlyPressed;
         }
     }
 
@@ -24,15 +27,26 @@ public class KeyCapManager : MonoBehaviour
         foreach (var keycap in keycaps)
         {
             keycap.OnPressed -= HandleKeycapPressed;
+            keycap.OnPressedEarly -= EarlyPressed;
         }
     }
-
     private void Update()
     {
         UpdateHover();
         CheckPressInput();
     }
-
+    private void EarlyPressed()
+    {
+        int randomNumber = Random.Range(0, audioClips.Length);
+        foreach (var audioClip in audioClips)
+        {
+            if (audioClip == audioClips[randomNumber])
+            {
+                audioSource.PlayOneShot(audioClip);
+            }
+            
+        }
+    }
     private void UpdateHover()
     {
         Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
