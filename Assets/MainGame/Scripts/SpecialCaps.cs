@@ -17,4 +17,9 @@ public class SpecialCaps : MonoBehaviour
         string text = currentText.Substring(0, newLength);
         monitor.UpdateUI(text, false);
     }
+
+    public void OnEnter()
+    {
+        monitor.CheckText();
+    }
 }

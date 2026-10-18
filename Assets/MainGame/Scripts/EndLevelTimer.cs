@@ -24,7 +24,7 @@ public class EndLevelTimer : MonoBehaviour
         }
         else if (!_isX2 && _currentTime < duration)
         {
-            _currentTime += Time.deltaTime * 2;
+            _currentTime += Time.deltaTime;
             slider.value = 1 - (_currentTime / duration);
         }
         else

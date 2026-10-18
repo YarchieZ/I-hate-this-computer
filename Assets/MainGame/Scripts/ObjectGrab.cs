@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class ObjectGrab : MonoBehaviour
 {
@@ -22,12 +24,43 @@ public class ObjectGrab : MonoBehaviour
     [SerializeField] private float scrollStep = 0.25f;
     [SerializeField] private float maxScrollDistance = 2f;
 
+    [Header("Заряд броска (F)")]
+    [SerializeField] private Slider chargeSlider;
+    [SerializeField] private Graphic[] uiElementsToFade;
+    [SerializeField] private float chargeDuration = 3f;
+    [SerializeField] private float uiFadeDuration = 0.3f;
+    [SerializeField] private float minThrowForce = 6f;
+    [SerializeField] private float maxThrowForce = 20f;
+    [SerializeField] private float maxShakeAmplitude = 0.25f;
+    [SerializeField] private float releaseShakeAmplitude = 0.5f;
+    [SerializeField] private float releaseShakeDuration = 0.5f;
+    [SerializeField] private CameraShake cameraShake;
+
     private GameObject heldObject;
     private Rigidbody heldRb;
     private bool isPullingIn;
     private Vector3 lastPosition;
     private Vector3 trackedVelocity;
     private float scrollOffset;
+
+    private bool isCharging;
+    private float chargeNormalized;
+
+    private void Start()
+    {
+        if (uiElementsToFade != null)
+        {
+            for (int i = 0; i < uiElementsToFade.Length; i++)
+            {
+                if (uiElementsToFade[i] != null)
+                {
+                    Color c = uiElementsToFade[i].color;
+                    c.a = 0f;
+                    uiElementsToFade[i].color = c;
+                }
+            }
+        }
+    }
 
     private void Update()
     {
@@ -47,6 +80,7 @@ public class ObjectGrab : MonoBehaviour
         {
             HandleRotation();
             HandleScroll();
+            HandleCharge();
         }
     }
 
@@ -67,6 +101,71 @@ public class ObjectGrab : MonoBehaviour
 
         scrollOffset += Mathf.Sign(scroll) * scrollStep;
         scrollOffset = Mathf.Clamp(scrollOffset, -maxScrollDistance, maxScrollDistance);
+    }
+
+    private void HandleCharge()
+    {
+        bool fHeld = Keyboard.current.fKey.isPressed;
+
+        if (fHeld)
+        {
+            if (!isCharging)
+            {
+                isCharging = true;
+                chargeNormalized = 0f;
+
+                FadeUI(1f);
+
+                if (chargeSlider != null)
+                {
+                    chargeSlider.DOKill();
+                    chargeSlider.value = 0f;
+                    chargeSlider.DOValue(1f, chargeDuration).SetEase(Ease.Linear);
+                }
+
+                if (cameraShake != null)
+                {
+                    cameraShake.StartCharge(maxShakeAmplitude, chargeDuration);
+                }
+            }
+
+            if (chargeSlider != null)
+            {
+                chargeNormalized = chargeSlider.value;
+            }
+        }
+        else if (isCharging)
+        {
+            isCharging = false;
+            chargeNormalized = 0f;
+
+            if (chargeSlider != null)
+            {
+                chargeSlider.DOKill();
+                chargeSlider.DOValue(0f, uiFadeDuration);
+            }
+
+            FadeUI(0f);
+
+            if (cameraShake != null)
+            {
+                cameraShake.StopCharge();
+            }
+        }
+    }
+
+    private void FadeUI(float targetAlpha)
+    {
+        if (uiElementsToFade == null) return;
+
+        for (int i = 0; i < uiElementsToFade.Length; i++)
+        {
+            if (uiElementsToFade[i] != null)
+            {
+                uiElementsToFade[i].DOKill();
+                uiElementsToFade[i].DOFade(targetAlpha, uiFadeDuration);
+            }
+        }
     }
 
     private void HandleRotation()
@@ -178,6 +277,29 @@ public class ObjectGrab : MonoBehaviour
     private void ReleaseObject()
     {
         if (heldObject == null) return;
+
+        bool wasCharging = isCharging;
+        float chargeAtRelease = chargeNormalized;
+
+        if (isCharging)
+        {
+            isCharging = false;
+            chargeNormalized = 0f;
+
+            if (chargeSlider != null)
+            {
+                chargeSlider.DOKill();
+                chargeSlider.value = 0f;
+            }
+
+            FadeUI(0f);
+
+            if (cameraShake != null)
+            {
+                cameraShake.StopCharge();
+            }
+        }
+
         if (heldRb != null)
         {
             heldRb.isKinematic = false;
@@ -187,7 +309,22 @@ public class ObjectGrab : MonoBehaviour
             heldRb.linearDamping = 0f;
             heldRb.angularDamping = 0.05f;
             heldRb.constraints = RigidbodyConstraints.None;
-            heldRb.linearVelocity = trackedVelocity * throwSpeedMultiplier;
+
+            if (wasCharging)
+            {
+                float throwForce = Mathf.Lerp(minThrowForce, maxThrowForce, chargeAtRelease);
+                Vector3 dir = playerCamera != null ? playerCamera.transform.forward : Vector3.forward;
+                heldRb.linearVelocity = dir * throwForce;
+
+                if (cameraShake != null)
+                {
+                    cameraShake.Shake(releaseShakeAmplitude, releaseShakeDuration);
+                }
+            }
+            else
+            {
+                heldRb.linearVelocity = trackedVelocity * throwSpeedMultiplier;
+            }
         }
 
         heldObject = null;

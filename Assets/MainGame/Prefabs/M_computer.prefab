@@ -26,7 +26,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6697957846872502641}
   m_LocalRotation: {x: -0, y: 0.7050805, z: -0, w: 0.70912725}
-  m_LocalPosition: {x: 0, y: 0, z: 0.0032}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0087}
   m_LocalScale: {x: 0.66666657, y: 0.6666667, z: 0.66666657}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: -32.463, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.1929, y: -0.0012}
-  m_SizeDelta: {x: 2.6184, y: 2.2045}
+  m_AnchoredPosition: {x: -0.1928, y: -0.0164}
+  m_SizeDelta: {x: 2.4345, y: 1.9963}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4081792358627685722
 MeshRenderer:
@@ -396,3 +396,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonitorStatus
   textMesh: {fileID: 7720512047896776537}
   animationMaxSize: 1
+  scaleMultiplier: 1.3
+  duration: 0.6
+  strength: 1
+  vibrato: 1
+  errorColor: {r: 0.5849056, g: 0, b: 0, a: 1}
