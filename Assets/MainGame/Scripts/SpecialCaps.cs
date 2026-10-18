@@ -1,13 +1,20 @@
-using TMPro;
 using UnityEngine;
 
 public class SpecialCaps : MonoBehaviour
 {
-    [SerializeField] private TextMeshPro textMesh;
+    private MonitorStatus monitor;
+
+    public void UpdateInfo(MonitorStatus ss)
+    {
+        monitor = ss;
+    }
 
     public void OnBackspace()
     {
-        string text = textMesh.text.Substring(0, textMesh.text.Length - 2);
-        textMesh.text = text;
+        string currentText = monitor.GetText();
+        if (string.IsNullOrEmpty(currentText)) return;
+        int newLength = Mathf.Max(0, currentText.Length - 2); 
+        string text = currentText.Substring(0, newLength);
+        monitor.UpdateUI(text, false);
     }
 }

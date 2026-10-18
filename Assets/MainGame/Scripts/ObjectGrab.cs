@@ -18,11 +18,16 @@ public class ObjectGrab : MonoBehaviour
     [SerializeField] private float rotateSpeed = 90f;
     [SerializeField] private bool rotateAroundWorldUp = true;
 
+    [Header("Дистанция колесиком")]
+    [SerializeField] private float scrollStep = 0.25f;
+    [SerializeField] private float maxScrollDistance = 2f;
+
     private GameObject heldObject;
     private Rigidbody heldRb;
     private bool isPullingIn;
     private Vector3 lastPosition;
     private Vector3 trackedVelocity;
+    private float scrollOffset;
 
     private void Update()
     {
@@ -41,6 +46,7 @@ public class ObjectGrab : MonoBehaviour
         if (heldObject != null && holdPoint != null)
         {
             HandleRotation();
+            HandleScroll();
         }
     }
 
@@ -52,19 +58,52 @@ public class ObjectGrab : MonoBehaviour
         }
     }
 
+    private void HandleScroll()
+    {
+        if (Mouse.current == null || playerCamera == null) return;
+
+        float scroll = Mouse.current.scroll.ReadValue().y;
+        if (scroll == 0f) return;
+
+        scrollOffset += Mathf.Sign(scroll) * scrollStep;
+        scrollOffset = Mathf.Clamp(scrollOffset, -maxScrollDistance, maxScrollDistance);
+    }
+
     private void HandleRotation()
     {
-        float direction = 0f;
-        if (Keyboard.current.aKey.isPressed) direction += 1f;
-        if (Keyboard.current.dKey.isPressed) direction -= 1f;
+        float yawDirection = 0f;
+        if (Keyboard.current.aKey.isPressed) yawDirection += 1f;
+        if (Keyboard.current.dKey.isPressed) yawDirection -= 1f;
 
-        if (direction == 0f) return;
+        float pitchDirection = 0f;
+        if (Keyboard.current.wKey.isPressed) pitchDirection -= 1f;
+        if (Keyboard.current.sKey.isPressed) pitchDirection += 1f;
 
-        Vector3 axis = rotateAroundWorldUp
+        if (yawDirection == 0f && pitchDirection == 0f) return;
+
+        Vector3 yawAxis = rotateAroundWorldUp
             ? Vector3.up
             : playerCamera != null ? playerCamera.transform.up : Vector3.up;
 
-        heldObject.transform.Rotate(axis, direction * rotateSpeed * Time.deltaTime, Space.World);
+        float delta = rotateSpeed * Time.deltaTime;
+
+        if (yawDirection != 0f)
+        {
+            heldObject.transform.Rotate(yawAxis, yawDirection * delta, Space.World);
+        }
+
+        if (pitchDirection != 0f)
+        {
+            Vector3 pitchAxis = hasCameraAxis()
+                ? playerCamera.transform.right
+                : Vector3.right;
+            heldObject.transform.Rotate(pitchAxis, pitchDirection * delta, Space.World);
+        }
+    }
+
+    private bool hasCameraAxis()
+    {
+        return playerCamera != null;
     }
 
     private void TryGrab()
@@ -82,9 +121,12 @@ public class ObjectGrab : MonoBehaviour
             heldRb.useGravity = false;
             heldRb.linearDamping = 0f;
             heldRb.angularDamping = 0f;
+            heldRb.constraints = RigidbodyConstraints.FreezeRotation;
+            heldRb.angularVelocity = Vector3.zero;
             lastPosition = heldObject.transform.position;
             trackedVelocity = Vector3.zero;
             isPullingIn = true;
+            scrollOffset = 0f;
         }
     }
 
@@ -92,6 +134,11 @@ public class ObjectGrab : MonoBehaviour
     {
         Vector3 currentPos = heldRb.position;
         Vector3 targetPos = holdPoint.position;
+
+        if (playerCamera != null && scrollOffset != 0f)
+        {
+            targetPos += playerCamera.transform.forward * scrollOffset;
+        }
 
         float speed = isPullingIn ? pullInSpeed : followSmoothSpeed;
         float t = 1f - Mathf.Exp(-speed * dt);
@@ -139,6 +186,7 @@ public class ObjectGrab : MonoBehaviour
             heldRb.useGravity = true;
             heldRb.linearDamping = 0f;
             heldRb.angularDamping = 0.05f;
+            heldRb.constraints = RigidbodyConstraints.None;
             heldRb.linearVelocity = trackedVelocity * throwSpeedMultiplier;
         }
 
@@ -146,5 +194,6 @@ public class ObjectGrab : MonoBehaviour
         heldRb = null;
         isPullingIn = false;
         trackedVelocity = Vector3.zero;
+        scrollOffset = 0f;
     }
 }
