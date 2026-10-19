@@ -584,6 +584,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -864415844642012315, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4612208854931224843}
+    - targetCorrespondingSourceObject: {fileID: -2425461731758412424, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9131877520807368697}
+    - targetCorrespondingSourceObject: {fileID: -2425461731758412424, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6444674859897486072}
     - targetCorrespondingSourceObject: {fileID: -7114830406381869287, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6374876020264409982}
@@ -1748,6 +1754,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f01fc79b8b6696c4a9cd25411e4cf059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpecialCaps
+  audioClip: {fileID: 8300000, guid: c0550945240eccb4c95ed76063a80da3, type: 3}
 --- !u!82 &3569749146710255048
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3435,6 +3442,62 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6804879983860262323, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
   m_PrefabInstance: {fileID: 2772131923460997734}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8660299126544903966 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -2425461731758412424, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
+  m_PrefabInstance: {fileID: 2772131923460997734}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &9131877520807368697
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8660299126544903966}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.00072822394, y: 0.00027375534, z: 0.00023705506}
+  m_Center: {x: -0.0017567927, y: -0.00042894835, z: 0.00024239931}
+--- !u!114 &6444674859897486072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8660299126544903966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b335817716710468bfdf49be621451, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeyCap
+  character: 
+  animationDuration: 0.5
+  pressDistance: 0.01
+  unityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7845029367839239994}
+        m_TargetAssemblyTypeName: SpecialCaps, Assembly-CSharp
+        m_MethodName: OnMogged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8664834636399297522 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6793462873679790484, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}

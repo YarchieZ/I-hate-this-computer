@@ -2007,6 +2007,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EndLevelTimer
   duration: 300
   slider: {fileID: 1777014817}
+  loseMenu: {fileID: 0}
 --- !u!64 &321618644
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4412,7 +4413,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f8f8c2513a2d906409e37e7acbdda501, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 61d5ab948386ccb4eb073361f94d77f0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9692,7 +9693,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1fd77780f10c32243835a773dacfc075, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5550ff553418b13438ed0fd59e67e6cd, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14423,6 +14424,7 @@ MonoBehaviour:
   failAudioClip: {fileID: 8300000, guid: 6ebb52c481c74754b96ef77e3c725578, type: 3}
   turnOffAudioClip: {fileID: 8300000, guid: d26f8c33106805e4da5d7344ee07175a, type: 3}
   turnOnAudioClip: {fileID: 8300000, guid: 8c4a46cfea51fc148aaafa06a0fb2c64, type: 3}
+  videoPlayer: {fileID: 0}
 --- !u!33 &5032648666440025909
 MeshFilter:
   m_ObjectHideFlags: 0

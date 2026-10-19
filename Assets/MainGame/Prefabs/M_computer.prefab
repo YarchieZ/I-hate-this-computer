@@ -321,6 +321,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6821887585681450876, guid: 3c59adc84469b7c488ba48202f1b3a37, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2922097025293120443}
+    - targetCorrespondingSourceObject: {fileID: 4238715221626264924, guid: 3c59adc84469b7c488ba48202f1b3a37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 382253206216620725}
   m_SourcePrefab: {fileID: 100100000, guid: 3c59adc84469b7c488ba48202f1b3a37, type: 3}
 --- !u!23 &1031049312680861589 stripped
 MeshRenderer:
@@ -354,7 +357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ac9c7e811e425b4fa6568231c39e846, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonitorButton
-  material: {fileID: 0}
+  material: {fileID: -6036822961600333271, guid: 3c59adc84469b7c488ba48202f1b3a37, type: 3}
   monitorStatus: {fileID: 4757991172531710324}
   audioSource: {fileID: 3306332889200896009}
   pressDistance: 0.1
@@ -487,6 +490,40 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4238715221626264924, guid: 3c59adc84469b7c488ba48202f1b3a37, type: 3}
   m_PrefabInstance: {fileID: 6999187537619359507}
   m_PrefabAsset: {fileID: 0}
+--- !u!328 &382253206216620725
+VideoPlayer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6625053377522272847}
+  m_Enabled: 1
+  m_VideoClip: {fileID: 32900000, guid: cf6ee3a7b7da7844eb8f4cab96076a9e, type: 3}
+  m_TargetCameraAlpha: 1
+  m_TargetCamera3DLayout: 0
+  m_TargetCamera: {fileID: 0}
+  m_TargetTexture: {fileID: 0}
+  m_TimeReference: 0
+  m_TargetMaterialRenderer: {fileID: 0}
+  m_TargetMaterialProperty: <noninit>
+  m_RenderMode: 3
+  m_AspectRatio: 2
+  m_DataSource: 0
+  m_TimeUpdateMode: 2
+  m_PlaybackSpeed: 1
+  m_AudioOutputMode: 2
+  m_TargetAudioSources: []
+  m_DirectAudioVolumes: []
+  m_Url: 
+  m_EnabledAudioTracks: 
+  m_DirectAudioMutes: 
+  m_ControlledAudioTrackCount: 0
+  m_PlayOnAwake: 1
+  m_SkipOnDrop: 1
+  m_Looping: 1
+  m_WaitForFirstFrame: 1
+  m_FrameReadyEventEnabled: 0
+  m_VideoShaders: []
 --- !u!4 &7397341084610326776 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3c59adc84469b7c488ba48202f1b3a37, type: 3}
@@ -552,6 +589,7 @@ MonoBehaviour:
   failAudioClip: {fileID: 8300000, guid: 6ebb52c481c74754b96ef77e3c725578, type: 3}
   turnOffAudioClip: {fileID: 8300000, guid: d26f8c33106805e4da5d7344ee07175a, type: 3}
   turnOnAudioClip: {fileID: 8300000, guid: 8c4a46cfea51fc148aaafa06a0fb2c64, type: 3}
+  videoPlayer: {fileID: 382253206216620725}
 --- !u!114 &1009692096091782858
 MonoBehaviour:
   m_ObjectHideFlags: 0

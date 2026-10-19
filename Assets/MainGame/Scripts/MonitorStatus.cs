@@ -1,6 +1,5 @@
 using DG.Tweening;
 using TMPro;
-using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -23,22 +22,32 @@ public class MonitorStatus : MonoBehaviour
     [SerializeField] private AudioClip turnOffAudioClip;
     [SerializeField] private AudioClip turnOnAudioClip;
     private int durability;
-    private VideoPlayer videoPlayer;
+    [SerializeField] VideoPlayer videoPlayer;
     private AudioSource audioSource;
     private ObjectSpawner objectSpawner;
     private Vector3 _baseScale;
     private Color _baseColor;
     private Vector3 _basePosition;
     private bool turnOn;
+
+    private string _baseText = "";
+    private bool _cursorVisible;
+    private float _cursorTimer;
+    private const float CursorBlinkInterval = 0.5f;
+    private const string CursorChar = "_";
+
     private void OnEnable()
     {
-        durability = Random.Range(60, 90);
+        durability = Random.Range(80, 110);
         turnOn = true;
         audioSource = GetComponent<AudioSource>();
         breakableObject.OnBroken += SendInfoToSpawner;
         _baseScale = textMesh.transform.localScale;
         _baseColor = textMesh.color;
         _basePosition = textMesh.transform.localPosition;
+        _baseText = "";
+        _cursorVisible = false;
+        _cursorTimer = 0f;
     }
 
     private void SendInfoToSpawner()
@@ -52,21 +61,23 @@ public class MonitorStatus : MonoBehaviour
     public void OnSpawn(ObjectSpawner gameManager)
     {
         textMesh.text = "";
+        _baseText = "";
         objectSpawner = gameManager;
     }
 
     public void CheckText()
     {
-        if (textMesh.text == objectSpawner.currentNoteName)
+        if (_baseText == objectSpawner.currentNoteName)
         {
             audioSource.PlayOneShot(correctAudioClip);
             textMesh.text = "";
+            _baseText = "";
             objectSpawner.SpawnItem(SpawnOptions.Note);
         }
         else
         {
             Debug.Log(objectSpawner.currentNoteName);
-            Debug.Log(textMesh.text);
+            Debug.Log(_baseText);
             LogError();
         }
     }
@@ -115,6 +126,7 @@ public class MonitorStatus : MonoBehaviour
             audioSource.PlayOneShot(turnOffAudioClip);
             Renderer indicatorRenderer = indicator.GetComponent<Renderer>();
             indicatorRenderer.material = redIndicatorMat;
+            videoPlayer.enabled = false;
         }
         else
         {
@@ -125,6 +137,7 @@ public class MonitorStatus : MonoBehaviour
             audioSource.PlayOneShot(turnOnAudioClip);
             Renderer indicatorRenderer = indicator.GetComponent<Renderer>();
             indicatorRenderer.material = greenIndicatorMat;
+            videoPlayer.enabled = true;
         }
         turnOn = !turnOn;
     }
@@ -137,15 +150,16 @@ public class MonitorStatus : MonoBehaviour
             
             if (durability >= 40)
             {
-                if (textMesh.text.Length > 63) return;
+                if (_baseText.Length > 63) return;
                 if (show)
                 {
-                    textMesh.text += text;
+                    _baseText += text;
                 }
                 else
                 {
-                    textMesh.text = text;
+                    _baseText = text;
                 }
+                RefreshDisplayText();
                 durability--;
             }
             else if (durability > 1)
@@ -153,15 +167,16 @@ public class MonitorStatus : MonoBehaviour
                 int num =  Random.Range(0, 100);
                 if (num >= 10)
                 {
-                    if (textMesh.text.Length > 63) return;
+                    if (_baseText.Length > 63) return;
                     if (show)
                     {
-                        textMesh.text += text;
+                        _baseText += text;
                     }
                     else
                     {
-                        textMesh.text = text;
+                        _baseText = text;
                     }
+                    RefreshDisplayText();
                     durability--;
                 }
                 else
@@ -182,6 +197,24 @@ public class MonitorStatus : MonoBehaviour
             }
         }
 
+    }
+
+    private void Update()
+    {
+        if (!turnOn || textMesh == null || !textMesh.gameObject.activeSelf) return;
+
+        _cursorTimer += Time.deltaTime;
+        if (_cursorTimer >= CursorBlinkInterval)
+        {
+            _cursorTimer -= CursorBlinkInterval;
+            _cursorVisible = !_cursorVisible;
+            RefreshDisplayText();
+        }
+    }
+
+    private void RefreshDisplayText()
+    {
+        textMesh.text = _cursorVisible ? _baseText + CursorChar : _baseText;
     }
 
     private void OnDisable()

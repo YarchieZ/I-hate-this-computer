@@ -134,7 +134,6 @@ public class Mainmenu : MonoBehaviour
         PlayClickSound(clickSound);
         AnimatePress(quitButton.transform, () =>
         {
-            UnityEditor.EditorApplication.isPlaying = false;
             Application.Quit();
         });
     }
