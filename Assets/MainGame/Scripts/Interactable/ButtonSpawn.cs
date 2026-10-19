@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -38,6 +40,7 @@ public class ButtonSpawn : MonoBehaviour, IInteractable
             else
             {
                 tipText.text = "Keyboard isnt fully broken";
+                StartCoroutine(DestroyCoroutine());
             }
         }
         else
@@ -49,7 +52,13 @@ public class ButtonSpawn : MonoBehaviour, IInteractable
             else
             {
                 tipText.text = "Monitor isnt fully broken";
+                StartCoroutine(DestroyCoroutine());
             }
         }
+    }
+    private IEnumerator DestroyCoroutine()
+    {
+        yield return new WaitForSeconds(1f);
+        tipText.text = "";
     }
 }

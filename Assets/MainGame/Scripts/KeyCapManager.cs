@@ -117,7 +117,7 @@ public class KeyCapManager : MonoBehaviour
         else if (durability > 1)
         {
             
-            int num = Random.Range(0, 120);
+            int num = Random.Range(0, 140);
             if (num >= 40)
             {
                 if (monitorStatus != null)

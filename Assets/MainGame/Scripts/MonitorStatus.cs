@@ -17,7 +17,6 @@ public class MonitorStatus : MonoBehaviour
     [SerializeField] private float animationMaxSize;
     [SerializeField] private float scaleMultiplier = 1.4f;   
     [SerializeField] private float duration = 0.6f;      
-    [SerializeField] private int vibrato = 20;               
     [SerializeField] private Color errorColor = Color.red;
     [SerializeField] private AudioClip correctAudioClip;
     [SerializeField] private AudioClip failAudioClip;
@@ -33,7 +32,7 @@ public class MonitorStatus : MonoBehaviour
     private bool turnOn;
     private void OnEnable()
     {
-        durability = Random.Range(0, 30);
+        durability = Random.Range(0, 70);
         turnOn = true;
         videoPlayer = display.GetComponent<VideoPlayer>();
         audioSource = GetComponent<AudioSource>();
@@ -126,8 +125,8 @@ public class MonitorStatus : MonoBehaviour
     {
         if (turnOn)
         {
-            int num = Random.Range(0, 100);
-            if (num >= 10)
+            
+            if (durability >= 20)
             {
                 if (textMesh.text.Length > 63) return;
                 if (show)
@@ -138,10 +137,39 @@ public class MonitorStatus : MonoBehaviour
                 {
                     textMesh.text = text;
                 }
+                durability--;
+            }
+            else if (durability > 1)
+            {
+                int num =  Random.Range(0, 100);
+                if (num >= 10)
+                {
+                    if (textMesh.text.Length > 63) return;
+                    if (show)
+                    {
+                        textMesh.text += text;
+                    }
+                    else
+                    {
+                        textMesh.text = text;
+                    }
+                    durability--;
+                }
+                else
+                {
+                    if (turnOn)
+                    {
+                        Turn();
+                    }
+                }
             }
             else
             {
-                Turn();
+                if (turnOn)
+                {
+                    Turn();
+                }
+                
             }
         }
 

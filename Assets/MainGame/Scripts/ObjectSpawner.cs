@@ -59,7 +59,7 @@ public class ObjectSpawner : MonoBehaviour
         if (option == SpawnOptions.Keyboard)
         {
             isKeyboardBroken = false;
-            GameObject obj = Instantiate(keyboardPrefab, spawnPos.position, spawnPos.rotation);
+            GameObject obj = Instantiate(keyboardPrefab, spawnPos.position, keyboardPrefab.transform.rotation);
             currentKeyboard = obj.GetComponent<KeyCapManager>();
             if (currentKeyboard != null && currentMonitor != null)
             {
@@ -69,7 +69,7 @@ public class ObjectSpawner : MonoBehaviour
         else if (option == SpawnOptions.Monitor)
         {
             isMonitorBroken = false;
-            GameObject obj = Instantiate(monitorPrefab, spawnPos.position, spawnPos.rotation);
+            GameObject obj = Instantiate(monitorPrefab, spawnPos.position, monitorPrefab.transform.rotation);
             currentMonitor = obj.GetComponent<MonitorStatus>();
             
             if (currentMonitor != null)
@@ -89,7 +89,7 @@ public class ObjectSpawner : MonoBehaviour
             }
             completedTasks++;
             textMesh.text = $"{completedTasks.ToString()}/5";
-            GameObject currentNote = Instantiate(notePrefab, spawnPos.position, spawnPos.rotation);
+            GameObject currentNote = Instantiate(notePrefab, spawnPos.position, notePrefab.transform.rotation);
             currentNotePad = currentNote.GetComponent<NotePadSpawner>();
             if (currentNotePad != null)
             {
