@@ -48,6 +48,7 @@ public class SettingsPanel : MonoBehaviour
             volumeSlider.maxValue = 1f;
             volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
             OnVolumeChanged(volumeSlider.value);
+            volumeSlider.value = 0.5f;
         }
 
         // --- Чувствительность ---

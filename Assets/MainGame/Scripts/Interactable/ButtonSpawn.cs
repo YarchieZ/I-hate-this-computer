@@ -14,9 +14,11 @@ public class ButtonSpawn : MonoBehaviour, IInteractable
     private AudioSource audioSource;
     private Vector3 _initialPosition;
     private Tween _currentTween;
-
+    
     private void Awake()
     {
+        tipText.text = "Press ESC to open sensitivity settings";
+        DestroyCoroutine(10f);
         audioSource = GetComponent<AudioSource>();
         if (buttonVisual == null)
             buttonVisual = transform;
@@ -40,7 +42,7 @@ public class ButtonSpawn : MonoBehaviour, IInteractable
             else
             {
                 tipText.text = "Keyboard isnt fully broken";
-                StartCoroutine(DestroyCoroutine());
+                StartCoroutine(DestroyCoroutine(1f));
             }
         }
         else
@@ -52,13 +54,13 @@ public class ButtonSpawn : MonoBehaviour, IInteractable
             else
             {
                 tipText.text = "Monitor isnt fully broken";
-                StartCoroutine(DestroyCoroutine());
+                StartCoroutine(DestroyCoroutine(1f));
             }
         }
     }
-    private IEnumerator DestroyCoroutine()
+    private IEnumerator DestroyCoroutine(float value)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(value);
         tipText.text = "";
     }
 }
