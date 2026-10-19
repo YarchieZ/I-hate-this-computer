@@ -32,9 +32,8 @@ public class MonitorStatus : MonoBehaviour
     private bool turnOn;
     private void OnEnable()
     {
-        durability = Random.Range(0, 70);
+        durability = Random.Range(60, 90);
         turnOn = true;
-        videoPlayer = display.GetComponent<VideoPlayer>();
         audioSource = GetComponent<AudioSource>();
         breakableObject.OnBroken += SendInfoToSpawner;
         _baseScale = textMesh.transform.localScale;
@@ -96,11 +95,21 @@ public class MonitorStatus : MonoBehaviour
 
     public void Turn()
     {
+        if (durability == 1) 
+        {
+            Renderer objectRenderer = display.GetComponent<Renderer>();
+            objectRenderer.material = turnOnMaterial;
+            textMesh.transform.DOKill();
+            textMesh.gameObject.SetActive(true);
+            audioSource.PlayOneShot(turnOnAudioClip);
+            Renderer indicatorRenderer = indicator.GetComponent<Renderer>();
+            indicatorRenderer.material = greenIndicatorMat;
+            return;
+        }
         if (turnOn)
         {
             Renderer objectRenderer = display.GetComponent<Renderer>();
             objectRenderer.material = turnOffMaterial;
-            videoPlayer.enabled = false;
             textMesh.transform.DOKill();
             textMesh.gameObject.SetActive(false);
             audioSource.PlayOneShot(turnOffAudioClip);
@@ -111,7 +120,6 @@ public class MonitorStatus : MonoBehaviour
         {
             Renderer objectRenderer = display.GetComponent<Renderer>();
             objectRenderer.material = turnOnMaterial;
-            videoPlayer.enabled = true;
             textMesh.transform.DOKill();
             textMesh.gameObject.SetActive(true);
             audioSource.PlayOneShot(turnOnAudioClip);
@@ -123,10 +131,11 @@ public class MonitorStatus : MonoBehaviour
 
     public void UpdateUI(string text, bool show)
     {
+        Debug.Log(durability);
         if (turnOn)
         {
             
-            if (durability >= 20)
+            if (durability >= 40)
             {
                 if (textMesh.text.Length > 63) return;
                 if (show)

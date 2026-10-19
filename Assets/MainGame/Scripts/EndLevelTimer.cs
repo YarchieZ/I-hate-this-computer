@@ -6,6 +6,7 @@ public class EndLevelTimer : MonoBehaviour
 {
     [SerializeField] private float duration;
     [SerializeField] private Slider slider;
+    [SerializeField] private LoseMenu loseMenu;
     private float _currentTime;
     private bool isShaking;
     private RectTransform originalPosition;
@@ -23,7 +24,7 @@ public class EndLevelTimer : MonoBehaviour
         }
         else
         {
-            
+            loseMenu.ShowLose();
         }
     }
 }

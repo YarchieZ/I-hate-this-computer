@@ -46,6 +46,7 @@ public class Mainmenu : MonoBehaviour
 
     private void Awake()
     {
+        Time.timeScale = 1;
         if (loadingPanel != null)
         {
             Color c = loadingPanel.color;

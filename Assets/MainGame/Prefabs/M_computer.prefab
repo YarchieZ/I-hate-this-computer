@@ -540,7 +540,7 @@ MonoBehaviour:
   redIndicatorMat: {fileID: 2100000, guid: cd9fe68f2a25a2f4c813d8e4b28fe2d5, type: 2}
   greenIndicatorMat: {fileID: 2100000, guid: d952fb75e8c9d4c4ead8d8be03cadee3, type: 2}
   indicator: {fileID: 1667009672535640708}
-  turnOnMaterial: {fileID: -6036822961600333271, guid: 3c59adc84469b7c488ba48202f1b3a37, type: 3}
+  turnOnMaterial: {fileID: 2100000, guid: 83cb9a4e14d30fe49b8de5722f805260, type: 2}
   turnOffMaterial: {fileID: 2100000, guid: 02d84bb8ad935e24fb16010f4eaa62f3, type: 2}
   breakableObject: {fileID: 1009692096091782858}
   textMesh: {fileID: 7720512047896776537}

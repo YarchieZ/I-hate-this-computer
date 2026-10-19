@@ -14,6 +14,8 @@ public enum SpawnOptions
 
 public class ObjectSpawner : MonoBehaviour
 {
+    
+    [SerializeField] private PauseMenu pauseMenu;
     [SerializeField] private TextMeshPro textMesh;
     [SerializeField] private LoadingScreen loadingScreen;
     [SerializeField] private Camera mainCamera;
@@ -88,7 +90,11 @@ public class ObjectSpawner : MonoBehaviour
                 currentNotePad.ChangeCurrentNote();
             }
             completedTasks++;
-            textMesh.text = $"{completedTasks.ToString()}/5";
+            if (completedTasks >= 4)
+            {
+                pauseMenu.ShowPause();
+            }
+            textMesh.text = $"{completedTasks.ToString()}/4";
             GameObject currentNote = Instantiate(notePrefab, spawnPos.position, notePrefab.transform.rotation);
             currentNotePad = currentNote.GetComponent<NotePadSpawner>();
             if (currentNotePad != null)
