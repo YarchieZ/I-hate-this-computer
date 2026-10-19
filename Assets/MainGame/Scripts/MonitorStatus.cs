@@ -5,13 +5,11 @@ using UnityEngine;
 
 public class MonitorStatus : MonoBehaviour
 {
-    
+    [SerializeField] private BreakableObject breakableObject;
     [SerializeField] private TextMeshPro textMesh;
     [SerializeField] private float animationMaxSize;
-    [Header("Настройки эффекта")]
     [SerializeField] private float scaleMultiplier = 1.4f;   
     [SerializeField] private float duration = 0.6f;      
-    [SerializeField] private float strength = 8f;            
     [SerializeField] private int vibrato = 20;               
     [SerializeField] private Color errorColor = Color.red;
     private ObjectSpawner objectSpawner;
@@ -20,9 +18,15 @@ public class MonitorStatus : MonoBehaviour
     private Vector3 _basePosition;
     private void OnEnable()
     {
+        breakableObject.OnBroken += SendInfoToSpawner;
         _baseScale = textMesh.transform.localScale;
         _baseColor = textMesh.color;
         _basePosition = textMesh.transform.localPosition;
+    }
+
+    private void SendInfoToSpawner()
+    {
+        objectSpawner.OnObjectBroken(SpawnOptions.Monitor);
     }
     public string GetText()
     {
@@ -91,5 +95,10 @@ public class MonitorStatus : MonoBehaviour
         {
             textMesh.text = text;
         }
+    }
+
+    private void OnDisable()
+    {
+        breakableObject.OnBroken -= SendInfoToSpawner;
     }
 }

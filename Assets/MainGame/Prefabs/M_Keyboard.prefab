@@ -335,6 +335,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3569749146710255048}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2885430421090144086}
     - targetCorrespondingSourceObject: {fileID: 4573940403621388067, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}
       insertIndex: -1
       addedObject: {fileID: 575425272528066415}
@@ -1575,6 +1578,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 69e646bd11cf3d444a0f6d363cd2162d, type: 3}
   - {fileID: 8300000, guid: 7c27b3a4388b33f4a87e5f6e429011b2, type: 3}
   rayDistance: 10
+  breakableObject: {fileID: 2885430421090144086}
 --- !u!54 &3479644786005970835
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1732,6 +1736,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2885430421090144086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3078771774513807159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecde1b7cfca8d224791788477bb35763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BreakableObject
+  breakSpeedThreshold: 5
+  useRelativeVelocity: 1
+  checkCooldown: 0.05
+  immunityDuration: 3
+  brokenFlagDelay: 1
+  disableComponentsDelay: 0
+  componentsToDisable:
+  - {fileID: 7918024741750967923}
+  isBroken: 0
 --- !u!1 &3192993436151242382 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 736160215851539688, guid: 3013c5f9ef3b2e6428a791fafa02b169, type: 3}

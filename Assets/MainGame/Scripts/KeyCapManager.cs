@@ -1,7 +1,9 @@
+using System;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using Random = UnityEngine.Random;
 
 public class KeyCapManager : MonoBehaviour
 {
@@ -13,16 +15,24 @@ public class KeyCapManager : MonoBehaviour
     private MonitorStatus monitorStatus;
     private AudioSource audioSource;
     private KeyCap currentHoveredKeycap;
-
-    // Пытаемся найти SpecialCaps, если он не назначен в инспекторе
+    private ObjectSpawner objectSpawnerMain;
+    [SerializeField] private  BreakableObject breakableObject;
     private void Awake()
     {
         if (specialCaps == null)
             specialCaps = GetComponentInChildren<SpecialCaps>();
     }
 
+    private void SendBreakInfo()
+    {
+        objectSpawnerMain.OnObjectBroken(SpawnOptions.Keyboard);
+    }
+
     private void OnEnable()
     {
+        if (breakableObject != null)
+            breakableObject.OnBroken += SendBreakInfo;
+
         audioSource = GetComponent<AudioSource>();
         foreach (var keycap in keycaps)
         {
@@ -38,13 +48,13 @@ public class KeyCapManager : MonoBehaviour
             keycap.OnPressed -= HandleKeycapPressed;
             keycap.OnPressedEarly -= EarlyPressed;
         }
+        if (breakableObject != null)
+            breakableObject.OnBroken -= SendBreakInfo;
     }
 
     private void Update()
     {
-        // Защита от null, пока камера не передана
         if (mainCamera == null) return; 
-
         UpdateHover();
         CheckPressInput();
     }
@@ -76,12 +86,11 @@ public class KeyCapManager : MonoBehaviour
         currentHoveredKeycap = hitKeycap;
     }
 
-    public void UpdateInfo(MonitorStatus monitor, Camera camera)
+    public void UpdateInfo(MonitorStatus monitor, Camera camera, ObjectSpawner objectSpawner)
     {
+        objectSpawnerMain = objectSpawner;
         mainCamera = camera;
         monitorStatus = monitor;
-        
-        // Передаем монитор в SpecialCaps, если он найден
         if (specialCaps != null && monitorStatus != null)
         {
             specialCaps.UpdateInfo(monitorStatus);

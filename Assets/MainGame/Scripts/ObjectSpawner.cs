@@ -26,6 +26,8 @@ public class ObjectSpawner : MonoBehaviour
     [SerializeField] private List<string> notes;
     public SpawnOptions spawnOptions;
     private int completedTasks = -1;
+    public bool isMonitorBroken {get; private set;}
+    public bool isKeyboardBroken {get; private set;}
     public MonitorStatus currentMonitor {get; private set;}
     public NotePadSpawner currentNotePad {get; private set; }
     public KeyCapManager currentKeyboard { get; private set; }
@@ -34,6 +36,18 @@ public class ObjectSpawner : MonoBehaviour
     private void Start()
     {
         StartCoroutine(StartSpawn());
+    }
+
+    public void OnObjectBroken(SpawnOptions spawnOption)
+    {
+        if (spawnOption == SpawnOptions.Keyboard)
+        {
+            isKeyboardBroken = true;
+        }
+        else if (spawnOption == SpawnOptions.Monitor)
+        {
+            isMonitorBroken = true;
+        }
     }
 
     public void SpawnItem(SpawnOptions option, Transform spawnPos = null)
@@ -50,7 +64,7 @@ public class ObjectSpawner : MonoBehaviour
             // Если монитор уже есть, сразу связываем
             if (currentKeyboard != null && currentMonitor != null)
             {
-                currentKeyboard.UpdateInfo(currentMonitor, mainCamera);
+                currentKeyboard.UpdateInfo(currentMonitor, mainCamera, this);
             }
         }
         else if (option == SpawnOptions.Monitor)
@@ -65,7 +79,7 @@ public class ObjectSpawner : MonoBehaviour
                 // Если клавиатура уже заспавнилась раньше, сообщаем ей о новом мониторе
                 if (currentKeyboard != null)
                 {
-                    currentKeyboard.UpdateInfo(currentMonitor, mainCamera);
+                    currentKeyboard.UpdateInfo(currentMonitor, mainCamera, this);
                 }
             }
         }
@@ -90,14 +104,14 @@ public class ObjectSpawner : MonoBehaviour
         {
             if (currentKeyboard != null && currentMonitor != null)
             {
-                currentKeyboard.UpdateInfo(currentMonitor, mainCamera);
+                currentKeyboard.UpdateInfo(currentMonitor, mainCamera, this);
             }
         }
         else if (spawnOption == SpawnOptions.Monitor)
         {
             if (currentKeyboard != null && currentMonitor != null)
             {
-                currentKeyboard.UpdateInfo(currentMonitor, mainCamera);
+                currentKeyboard.UpdateInfo(currentMonitor, mainCamera, this);
             }
         }
     }
