@@ -2,9 +2,16 @@ using DG.Tweening;
 using TMPro;
 using UnityEditor.Build.Content;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class MonitorStatus : MonoBehaviour
 {
+    [SerializeField] private GameObject display;
+    [SerializeField] private Material redIndicatorMat;
+    [SerializeField] private Material greenIndicatorMat;
+    [SerializeField] private GameObject indicator;
+    [SerializeField] private Material turnOnMaterial;
+    [SerializeField] private Material turnOffMaterial;
     [SerializeField] private BreakableObject breakableObject;
     [SerializeField] private TextMeshPro textMesh;
     [SerializeField] private float animationMaxSize;
@@ -12,12 +19,24 @@ public class MonitorStatus : MonoBehaviour
     [SerializeField] private float duration = 0.6f;      
     [SerializeField] private int vibrato = 20;               
     [SerializeField] private Color errorColor = Color.red;
+    [SerializeField] private AudioClip correctAudioClip;
+    [SerializeField] private AudioClip failAudioClip;
+    [SerializeField] private AudioClip turnOffAudioClip;
+    [SerializeField] private AudioClip turnOnAudioClip;
+    private int durability;
+    private VideoPlayer videoPlayer;
+    private AudioSource audioSource;
     private ObjectSpawner objectSpawner;
     private Vector3 _baseScale;
     private Color _baseColor;
     private Vector3 _basePosition;
+    private bool turnOn;
     private void OnEnable()
     {
+        durability = Random.Range(0, 30);
+        turnOn = true;
+        videoPlayer = display.GetComponent<VideoPlayer>();
+        audioSource = GetComponent<AudioSource>();
         breakableObject.OnBroken += SendInfoToSpawner;
         _baseScale = textMesh.transform.localScale;
         _baseColor = textMesh.color;
@@ -42,6 +61,7 @@ public class MonitorStatus : MonoBehaviour
     {
         if (textMesh.text == objectSpawner.currentNoteName)
         {
+            audioSource.PlayOneShot(correctAudioClip);
             textMesh.text = "";
             objectSpawner.SpawnItem(SpawnOptions.Note);
         }
@@ -52,27 +72,18 @@ public class MonitorStatus : MonoBehaviour
             LogError();
         }
     }
-    private void LogError()
+    public void LogError()
     {
-        // Убиваем предыдущие твины, чтобы не накапливались
+        audioSource.PlayOneShot(failAudioClip);
         textMesh.transform.DOKill();
         textMesh.DOKill();
-
-        // Возвращаем к исходному состоянию на случай прерванного эффекта
         textMesh.transform.localScale = _baseScale;
         textMesh.color = _baseColor;
-
         Sequence seq = DOTween.Sequence();
-
-        // 1. Увеличение + красный цвет
         seq.Append(textMesh.transform.DOScale(_baseScale * scaleMultiplier, duration * 0.3f)
             .SetEase(Ease.OutQuad));
         seq.Join(textMesh.DOColor(errorColor, duration * 0.3f));
-
-        // 2. Небольшая пауза на пике
         seq.AppendInterval(duration * 0.15f);
-
-        // 3. Возврат к исходному размеру и цвету
         seq.Append(textMesh.transform.DOScale(_baseScale, duration * 0.55f)
             .SetEase(Ease.OutBack));
         seq.Join(textMesh.DOColor(_baseColor, duration * 0.55f));
@@ -84,17 +95,56 @@ public class MonitorStatus : MonoBehaviour
         });
     }
 
-    public void UpdateUI(string text, bool show)
+    public void Turn()
     {
-        if (textMesh.text.Length > 63) return;
-        if (show)
+        if (turnOn)
         {
-            textMesh.text += text;
+            Renderer objectRenderer = display.GetComponent<Renderer>();
+            objectRenderer.material = turnOffMaterial;
+            videoPlayer.enabled = false;
+            textMesh.transform.DOKill();
+            textMesh.gameObject.SetActive(false);
+            audioSource.PlayOneShot(turnOffAudioClip);
+            Renderer indicatorRenderer = indicator.GetComponent<Renderer>();
+            indicatorRenderer.material = redIndicatorMat;
         }
         else
         {
-            textMesh.text = text;
+            Renderer objectRenderer = display.GetComponent<Renderer>();
+            objectRenderer.material = turnOnMaterial;
+            videoPlayer.enabled = true;
+            textMesh.transform.DOKill();
+            textMesh.gameObject.SetActive(true);
+            audioSource.PlayOneShot(turnOnAudioClip);
+            Renderer indicatorRenderer = indicator.GetComponent<Renderer>();
+            indicatorRenderer.material = greenIndicatorMat;
         }
+        turnOn = !turnOn;
+    }
+
+    public void UpdateUI(string text, bool show)
+    {
+        if (turnOn)
+        {
+            int num = Random.Range(0, 100);
+            if (num >= 10)
+            {
+                if (textMesh.text.Length > 63) return;
+                if (show)
+                {
+                    textMesh.text += text;
+                }
+                else
+                {
+                    textMesh.text = text;
+                }
+            }
+            else
+            {
+                Turn();
+            }
+        }
+
     }
 
     private void OnDisable()

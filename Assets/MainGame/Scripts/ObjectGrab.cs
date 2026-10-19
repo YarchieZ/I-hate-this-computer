@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class ObjectGrab : MonoBehaviour
 {
+    [SerializeField] private AudioSource audioSource;
     [SerializeField] private Transform holdPoint;
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float grabDistance = 5f;
@@ -312,6 +313,7 @@ public class ObjectGrab : MonoBehaviour
 
             if (wasCharging)
             {
+                audioSource.Play();
                 float throwForce = Mathf.Lerp(minThrowForce, maxThrowForce, chargeAtRelease);
                 Vector3 dir = playerCamera != null ? playerCamera.transform.forward : Vector3.forward;
                 heldRb.linearVelocity = dir * throwForce;

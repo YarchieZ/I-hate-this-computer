@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -9,6 +10,8 @@ public class BreakableObject : MonoBehaviour
     [SerializeField] private bool useRelativeVelocity = true;
     [SerializeField] private float checkCooldown = 0.05f;
 
+    [SerializeField] private AudioClip audioClip;
+    
     [Header("Тайминги")]
     [SerializeField] private float immunityDuration = 5f;
     [SerializeField] private float brokenFlagDelay = 1f;
@@ -17,13 +20,17 @@ public class BreakableObject : MonoBehaviour
     [Header("Компоненты для отключения при поломке")]
     [SerializeField] private MonoBehaviour[] componentsToDisable;
 
+    [Header("Материал при поломке")]
+    [SerializeField] private Material brokenMaterial;
+    [SerializeField] private List<Renderer> renderersToChangeMaterial = new List<Renderer>();
+
     [Header("Состояние")]
     [SerializeField] private bool isBroken = false;
 
     public bool IsBroken => isBroken;
-
+    public bool AlreadyGettingDestroyed;
     public event Action OnBroken;
-
+    private AudioSource _audioSource;
     private Rigidbody _rb;
     private float _lastCheckTime;
     private float _spawnTime;
@@ -33,6 +40,7 @@ public class BreakableObject : MonoBehaviour
 
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
         _rb = GetComponent<Rigidbody>();
         _spawnTime = Time.time;
     }
@@ -72,12 +80,14 @@ public class BreakableObject : MonoBehaviour
         return normal == Vector3.zero ? relativeVelocity.magnitude : normalSpeed;
     }
 
-    private void Break()
+    public void Break()
     {
         if (_breakTriggered) return;
         _breakTriggered = true;
         Debug.Log("Break");
         OnBroken?.Invoke();
+        _audioSource.PlayOneShot(audioClip);
+        ApplyBrokenMaterial();
 
         if (disableComponentsDelay > 0f)
         {
@@ -93,6 +103,24 @@ public class BreakableObject : MonoBehaviour
         if (_brokenFlagCoroutine != null)
             StopCoroutine(_brokenFlagCoroutine);
         _brokenFlagCoroutine = StartCoroutine(SetBrokenAfterDelay(brokenFlagDelay));
+    }
+
+    private void ApplyBrokenMaterial()
+    {
+        if (brokenMaterial == null) return;
+        if (renderersToChangeMaterial == null) return;
+
+        foreach (var rend in renderersToChangeMaterial)
+        {
+            if (rend == null) continue;
+
+            Material[] materials = rend.materials;
+            for (int i = 0; i < materials.Length; i++)
+            {
+                materials[i] = brokenMaterial;
+            }
+            rend.materials = materials;
+        }
     }
 
     private void DisableComponents()

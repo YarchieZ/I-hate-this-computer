@@ -14,7 +14,7 @@ public enum SpawnOptions
 
 public class ObjectSpawner : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI textMesh;
+    [SerializeField] private TextMeshPro textMesh;
     [SerializeField] private LoadingScreen loadingScreen;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject notePrefab;
@@ -58,10 +58,9 @@ public class ObjectSpawner : MonoBehaviour
         }
         if (option == SpawnOptions.Keyboard)
         {
+            isKeyboardBroken = false;
             GameObject obj = Instantiate(keyboardPrefab, spawnPos.position, spawnPos.rotation);
             currentKeyboard = obj.GetComponent<KeyCapManager>();
-            
-            // Если монитор уже есть, сразу связываем
             if (currentKeyboard != null && currentMonitor != null)
             {
                 currentKeyboard.UpdateInfo(currentMonitor, mainCamera, this);
@@ -69,14 +68,13 @@ public class ObjectSpawner : MonoBehaviour
         }
         else if (option == SpawnOptions.Monitor)
         {
+            isMonitorBroken = false;
             GameObject obj = Instantiate(monitorPrefab, spawnPos.position, spawnPos.rotation);
             currentMonitor = obj.GetComponent<MonitorStatus>();
             
             if (currentMonitor != null)
             {
                 currentMonitor.OnSpawn(this);
-                
-                // Если клавиатура уже заспавнилась раньше, сообщаем ей о новом мониторе
                 if (currentKeyboard != null)
                 {
                     currentKeyboard.UpdateInfo(currentMonitor, mainCamera, this);
@@ -85,8 +83,12 @@ public class ObjectSpawner : MonoBehaviour
         }
         else if (option == SpawnOptions.Note)
         {
+            if (currentNotePad != null)
+            {
+                currentNotePad.ChangeCurrentNote();
+            }
             completedTasks++;
-            textMesh.text = $"{completedTasks.ToString()}/10";
+            textMesh.text = $"{completedTasks.ToString()}/5";
             GameObject currentNote = Instantiate(notePrefab, spawnPos.position, spawnPos.rotation);
             currentNotePad = currentNote.GetComponent<NotePadSpawner>();
             if (currentNotePad != null)
@@ -118,7 +120,6 @@ public class ObjectSpawner : MonoBehaviour
 
     private IEnumerator StartSpawn()
     {
-        // Сначала монитор, потом клавиатура
         SpawnItem(SpawnOptions.Monitor, monitorStartPoint);
         yield return new WaitForSeconds(1f);
         SpawnItem(SpawnOptions.Keyboard, keyboardStartPoint);
