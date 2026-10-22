@@ -90,11 +90,11 @@ public class ObjectSpawner : MonoBehaviour
                 currentNotePad.ChangeCurrentNote();
             }
             completedTasks++;
-            if (completedTasks >= 4)
+            if (completedTasks >= 2)
             {
                 pauseMenu.ShowPause();
             }
-            textMesh.text = $"{completedTasks.ToString()}/4";
+            textMesh.text = $"{completedTasks.ToString()}/2";
             GameObject currentNote = Instantiate(notePrefab, spawnPos.position, notePrefab.transform.rotation);
             currentNotePad = currentNote.GetComponent<NotePadSpawner>();
             if (currentNotePad != null)

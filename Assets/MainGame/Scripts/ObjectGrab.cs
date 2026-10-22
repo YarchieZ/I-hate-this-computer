@@ -79,7 +79,8 @@ public class ObjectGrab : MonoBehaviour
             return;
         }
 
-        if (kb.eKey.wasReleasedThisFrame)
+        // Один раз нажали E — отпустили объект
+        if (kb.eKey.wasPressedThisFrame)
         {
             ReleaseObject();
             return;

@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class LoseMenu : MonoBehaviour
 {
+    [SerializeField] private MouseLook mouseLook;
     [SerializeField] private RectTransform losePanel;
     [SerializeField] private Button mainMenuButton;
     [SerializeField] private AudioSource audioSource;
@@ -20,7 +21,6 @@ public class LoseMenu : MonoBehaviour
 
     private void Awake()
     {
-        HidePanelImmediate(losePanel);
 
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
@@ -41,8 +41,8 @@ public class LoseMenu : MonoBehaviour
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-
-        ShowPopup(losePanel);
+        losePanel.gameObject.SetActive(true);
+        mouseLook.enabled = false;
         isOpen = true;
     }
 
@@ -54,46 +54,7 @@ public class LoseMenu : MonoBehaviour
             SceneManager.LoadScene(mainMenuSceneName);
         });
     }
-
-    private void ShowPopup(RectTransform panel)
-    {
-        if (panel == null) return;
-
-        panel.DOKill();
-        panel.gameObject.SetActive(true);
-        panel.localScale = Vector3.one * popupStartScale;
-
-        Image bg = panel.GetComponent<Image>();
-        if (bg != null)
-        {
-            Color c = bg.color;
-            c.a = 0f;
-            bg.color = c;
-            bg.raycastTarget = true;
-            bg.DOFade(1f, popupDuration).SetEase(Ease.OutQuad);
-        }
-
-        panel.DOScale(Vector3.one, popupDuration)
-            .SetEase(Ease.OutBack);
-    }
-
-    private void HidePanelImmediate(RectTransform panel)
-    {
-        if (panel == null) return;
-
-        panel.localScale = Vector3.one * popupStartScale;
-
-        Image bg = panel.GetComponent<Image>();
-        if (bg != null)
-        {
-            Color c = bg.color;
-            c.a = 0f;
-            bg.color = c;
-            bg.raycastTarget = false;
-        }
-
-        panel.gameObject.SetActive(false);
-    }
+    
 
     private void PlayClickSound()
     {

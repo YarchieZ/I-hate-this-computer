@@ -17,8 +17,7 @@ public class ButtonSpawn : MonoBehaviour, IInteractable
     
     private void Awake()
     {
-        tipText.text = "Press ESC to open sensitivity settings";
-        DestroyCoroutine(10f);
+        StartCoroutine(Starter());
         audioSource = GetComponent<AudioSource>();
         if (buttonVisual == null)
             buttonVisual = transform;
@@ -61,6 +60,16 @@ public class ButtonSpawn : MonoBehaviour, IInteractable
     private IEnumerator DestroyCoroutine(float value)
     {
         yield return new WaitForSeconds(value);
+        tipText.text = "";
+    }
+    private IEnumerator Starter()
+    {
+        tipText.text = "E - Grab object";
+        yield return new WaitForSeconds(5f);
+        tipText.text = "Hold F - Charge throw";
+        yield return new WaitForSeconds(5f);
+        tipText.text = "Complete all write tasks before the timer on the wall ends";
+        yield return new WaitForSeconds(5f);
         tipText.text = "";
     }
 }

@@ -7,28 +7,21 @@ using System.Text;
 
 public class SettingsPanel : MonoBehaviour
 {
-    [Header("Панель настроек")]
     [SerializeField] private GameObject settingsPanel;
-
-    [Header("Компоненты, отключаемые при паузе")]
     [SerializeField] private List<MonoBehaviour> componentsToDisable = new List<MonoBehaviour>();
-
-    [Header("Настройки звука")]
     [SerializeField] private Slider volumeSlider;
     [SerializeField] private List<AudioSource> audioSources = new List<AudioSource>();
-
-    [Header("Чувствительность мыши")]
-    [Tooltip("Скрипт MouseLook, чью чувствительность будем менять")]
     [SerializeField] private MouseLook mouseLook;
-    [Tooltip("TMP Input Field для значения чувствительности (1..100)")]
     [SerializeField] private TMP_InputField sensitivityInput;
-
-    [Header("Курсор")]
     [SerializeField] private bool showCursorOnPause = true;
 
     private const float MIN_SENSITIVITY = 1f;
     private const float MAX_SENSITIVITY = 100f;
     private const float DEFAULT_SENSITIVITY = 10f;
+    private const float DEFAULT_VOLUME = 0.5f;
+
+    private const string PREFS_VOLUME = "Settings.Volume";
+    private const string PREFS_SENSITIVITY = "Settings.Sensitivity";
 
     private InputAction escAction;
     private bool isPaused = false;
@@ -41,27 +34,24 @@ public class SettingsPanel : MonoBehaviour
         if (settingsPanel != null)
             settingsPanel.SetActive(false);
 
-        // --- Громкость ---
+        LoadSettings(out float savedVolume, out float savedSensitivity);
+
         if (volumeSlider != null)
         {
             volumeSlider.minValue = 0f;
             volumeSlider.maxValue = 1f;
             volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
-            OnVolumeChanged(volumeSlider.value);
-            volumeSlider.value = 0.5f;
+            volumeSlider.SetValueWithoutNotify(savedVolume);
+            OnVolumeChanged(savedVolume);
         }
 
-        // --- Чувствительность ---
         if (mouseLook != null)
         {
-            // Если в MouseLook значение по умолчанию не выставлено — ставим 50
-            if (mouseLook.SensitivityValue <= 0f)
-                mouseLook.SensitivityValue = DEFAULT_SENSITIVITY;
+            mouseLook.SensitivityValue = savedSensitivity;
         }
 
         if (sensitivityInput != null)
         {
-            // Только целые числа (1..100) — можно сделать и Decimal, если нужны дробные
             sensitivityInput.contentType = TMP_InputField.ContentType.IntegerNumber;
             sensitivityInput.characterValidation = TMP_InputField.CharacterValidation.Integer;
             sensitivityInput.onEndEdit.AddListener(OnSensitivityInputEndEdit);
@@ -70,55 +60,33 @@ public class SettingsPanel : MonoBehaviour
             RefreshSensitivityField();
         }
 
-        // --- ESC ---
         escAction = new InputAction("ToggleSettings", InputActionType.Button, "<Keyboard>/escape");
         escAction.performed += OnEscPerformed;
     }
 
-    private void OnEnable()
+    private static void LoadSettings(out float volume, out float sensitivity)
     {
-        escAction?.Enable();
+        volume = PlayerPrefs.GetFloat(PREFS_VOLUME, DEFAULT_VOLUME);
+        sensitivity = PlayerPrefs.GetFloat(PREFS_SENSITIVITY, DEFAULT_SENSITIVITY);
+
+        volume = Mathf.Clamp01(volume);
+        if (sensitivity <= 0f)
+            sensitivity = DEFAULT_SENSITIVITY;
+        sensitivity = Mathf.Clamp(sensitivity, MIN_SENSITIVITY, MAX_SENSITIVITY);
     }
 
-    private void OnDisable()
+    private void SaveVolume(float value)
     {
-        escAction?.Disable();
+        PlayerPrefs.SetFloat(PREFS_VOLUME, value);
+        PlayerPrefs.Save();
     }
 
-    private void OnDestroy()
+    private void SaveSensitivity(float value)
     {
-        if (escAction != null)
-        {
-            escAction.performed -= OnEscPerformed;
-            escAction.Dispose();
-            escAction = null;
-        }
-
-        if (isPaused)
-        {
-            Time.timeScale = previousTimeScale > 0f ? previousTimeScale : 1f;
-            RestoreCursor();
-        }
-
-        if (mouseLook != null)
-            mouseLook.IsInputBlocked = false;
-
-        if (volumeSlider != null)
-            volumeSlider.onValueChanged.RemoveListener(OnVolumeChanged);
-
-        if (sensitivityInput != null)
-        {
-            sensitivityInput.onEndEdit.RemoveListener(OnSensitivityInputEndEdit);
-            sensitivityInput.onSubmit.RemoveListener(OnSensitivityInputSubmit);
-            sensitivityInput.onValueChanged.RemoveListener(OnSensitivityInputValueChanged);
-        }
+        PlayerPrefs.SetFloat(PREFS_SENSITIVITY, value);
+        PlayerPrefs.Save();
     }
 
-    // ==================== ЧУВСТВИТЕЛЬНОСТЬ ====================
-
-    /// <summary>
-    /// Жёсткая фильтрация ввода: только цифры (без точки/запятой/минуса).
-    /// </summary>
     private void OnSensitivityInputValueChanged(string text)
     {
         if (sensitivityInput == null) return;
@@ -153,15 +121,8 @@ public class SettingsPanel : MonoBehaviour
             Mathf.RoundToInt(mouseLook.SensitivityValue).ToString());
     }
 
-    private void OnSensitivityInputEndEdit(string text)
-    {
-        ApplySensitivityFromText(text);
-    }
-
-    private void OnSensitivityInputSubmit(string text)
-    {
-        ApplySensitivityFromText(text);
-    }
+    private void OnSensitivityInputEndEdit(string text) => ApplySensitivityFromText(text);
+    private void OnSensitivityInputSubmit(string text) => ApplySensitivityFromText(text);
 
     private void ApplySensitivityFromText(string text)
     {
@@ -172,16 +133,10 @@ public class SettingsPanel : MonoBehaviour
         {
             float clamped = Mathf.Clamp(value, MIN_SENSITIVITY, MAX_SENSITIVITY);
             mouseLook.SensitivityValue = clamped;
+            SaveSensitivity(clamped);
         }
-        else
-        {
-            // Если ввели пусто/невалидно — вернуть текущее значение
-        }
-
         RefreshSensitivityField();
     }
-
-    // ==================== ГРОМКОСТЬ ====================
 
     private void OnVolumeChanged(float value)
     {
@@ -190,14 +145,42 @@ public class SettingsPanel : MonoBehaviour
             if (source != null)
                 source.volume = value;
         }
+        SaveVolume(value);
     }
 
-    // ==================== ESC / ПАУЗА ====================
+    private void OnEnable()  => escAction?.Enable();
+    private void OnDisable() => escAction?.Disable();
 
-    private void OnEscPerformed(InputAction.CallbackContext ctx)
+    private void OnDestroy()
     {
-        TogglePanel();
+        if (escAction != null)
+        {
+            escAction.performed -= OnEscPerformed;
+            escAction.Dispose();
+            escAction = null;
+        }
+
+        if (isPaused)
+        {
+            Time.timeScale = previousTimeScale > 0f ? previousTimeScale : 1f;
+            RestoreCursor();
+        }
+
+        if (mouseLook != null)
+            mouseLook.IsInputBlocked = false;
+
+        if (volumeSlider != null)
+            volumeSlider.onValueChanged.RemoveListener(OnVolumeChanged);
+
+        if (sensitivityInput != null)
+        {
+            sensitivityInput.onEndEdit.RemoveListener(OnSensitivityInputEndEdit);
+            sensitivityInput.onSubmit.RemoveListener(OnSensitivityInputSubmit);
+            sensitivityInput.onValueChanged.RemoveListener(OnSensitivityInputValueChanged);
+        }
     }
+
+    private void OnEscPerformed(InputAction.CallbackContext ctx) => TogglePanel();
 
     private void TogglePanel()
     {
@@ -261,6 +244,7 @@ public class SettingsPanel : MonoBehaviour
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
     }
+
     private void RestoreCursor()
     {
         Cursor.lockState = previousLockMode;

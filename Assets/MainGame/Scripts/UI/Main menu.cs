@@ -5,26 +5,17 @@ using DG.Tweening;
 
 public class Mainmenu : MonoBehaviour
 {
-    [Header("Кнопки")]
     [SerializeField] private Button playButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private Button authorsButton;
     [SerializeField] private Button settingsButton;
-
-    [Header("Панели")]
     [SerializeField] private Image loadingPanel;
     [SerializeField] private RectTransform authorsPanel;
     [SerializeField] private RectTransform settingsPanel;
-
-    [Header("Логотип")]
     [SerializeField] private RectTransform logo;
-
-    [Header("Звуки")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip clickSound;
     [SerializeField] private AudioClip playClickSound;
-
-    [Header("Настройки анимации")]
     [SerializeField] private float pressScale = 0.9f;
     [SerializeField] private float pressDuration = 0.1f;
     [SerializeField] private float fadeDuration = 0.5f;
@@ -164,6 +155,18 @@ public class Mainmenu : MonoBehaviour
         }
         else
         {
+            // Закрываем противоположную панель, если она открыта
+            if (panel == authorsPanel && settingsOpen)
+            {
+                HidePopup(settingsPanel);
+                settingsOpen = false;
+            }
+            else if (panel == settingsPanel && authorsOpen)
+            {
+                HidePopup(authorsPanel);
+                authorsOpen = false;
+            }
+
             ShowPopup(panel);
             if (panel == authorsPanel) authorsOpen = true;
             if (panel == settingsPanel) settingsOpen = true;

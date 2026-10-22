@@ -1707,7 +1707,6 @@ GameObject:
   - component: {fileID: 321618646}
   - component: {fileID: 321618645}
   - component: {fileID: 321618644}
-  - component: {fileID: 321618643}
   m_Layer: 0
   m_Name: M_Timer
   m_TagString: Untagged
@@ -1715,21 +1714,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &321618643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 321618642}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bc5558e903da79409a515dc5336c843, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EndLevelTimer
-  duration: 300
-  slider: {fileID: 1777014817}
-  loseMenu: {fileID: 0}
 --- !u!64 &321618644
 MeshCollider:
   m_ObjectHideFlags: 0
