@@ -16,16 +16,10 @@ public class ObjectGrab : MonoBehaviour
     [SerializeField] private float leashDistance = 4f;
     [SerializeField] private float leashExtraSpeed = 8f;
     [SerializeField] private float throwSpeedMultiplier = 1f;
-
-    [Header("Вращение в руках")]
     [SerializeField] private float rotateSpeed = 90f;
     [SerializeField] private bool rotateAroundWorldUp = true;
-
-    [Header("Дистанция колесиком")]
     [SerializeField] private float scrollStep = 0.25f;
     [SerializeField] private float maxScrollDistance = 2f;
-
-    [Header("Заряд броска (F)")]
     [SerializeField] private Slider chargeSlider;
     [SerializeField] private Graphic[] uiElementsToFade;
     [SerializeField] private float chargeDuration = 3f;
@@ -36,25 +30,19 @@ public class ObjectGrab : MonoBehaviour
     [SerializeField] private float releaseShakeAmplitude = 0.5f;
     [SerializeField] private float releaseShakeDuration = 0.5f;
     [SerializeField] private CameraShake cameraShake;
-
     private GameObject heldObject;
     private Rigidbody heldRb;
     private Transform heldTransform;
     private bool isPullingIn;
     private Vector3 trackedVelocity;
     private float scrollOffset;
-
     private bool isCharging;
     private float chargeNormalized;
-
-    // Кэш
     private bool hasHoldPoint;
     private bool hasCamera;
     private bool hasChargeSlider;
     private bool hasAudio;
     private bool hasShake;
-
-    // Кэш осей камеры для вращения
     private Transform cameraTransform;
 
     private void Awake()
@@ -98,11 +86,7 @@ public class ObjectGrab : MonoBehaviour
         }
 
         if (!hasHoldPoint) return;
-
-        // Вращение — самое горячее
         HandleRotation(kb);
-
-        // Скролл — только если мышь есть
         var mouse = Mouse.current;
         if (mouse != null && hasCamera)
         {
@@ -114,8 +98,6 @@ public class ObjectGrab : MonoBehaviour
                 else if (scrollOffset < -maxScrollDistance) scrollOffset = -maxScrollDistance;
             }
         }
-
-        // Заряд
         HandleCharge(kb);
     }
 
@@ -125,7 +107,6 @@ public class ObjectGrab : MonoBehaviour
             FollowHoldPoint(Time.fixedDeltaTime);
     }
 
-    // -------- Вращение (оптимизировано) --------
     private void HandleRotation(Keyboard kb)
     {
         float yawDir = 0f;
@@ -137,23 +118,14 @@ public class ObjectGrab : MonoBehaviour
         if (kb.sKey.isPressed) pitchDir += 1f;
 
         if (yawDir == 0f && pitchDir == 0f) return;
-
         float delta = rotateSpeed * Time.deltaTime;
-
-        // Ось yaw
         Vector3 yawAxis;
         if (rotateAroundWorldUp) yawAxis = Vector3.up;
         else if (cameraTransform != null) yawAxis = cameraTransform.up;
         else yawAxis = Vector3.up;
-
-        // Ось pitch
         Vector3 pitchAxis = cameraTransform != null ? cameraTransform.right : Vector3.right;
-
-        // Собираем поворот в один Quaternion, затем ОДИН вызов
         Quaternion yawRot   = yawDir   != 0f ? Quaternion.AngleAxis(yawDir   * delta, yawAxis)   : Quaternion.identity;
         Quaternion pitchRot = pitchDir != 0f ? Quaternion.AngleAxis(pitchDir * delta, pitchAxis) : Quaternion.identity;
-
-        // Применяем напрямую к Rigidbody, чтобы не конфликтовать с физикой
         Quaternion targetRot = yawRot * pitchRot * heldRb.rotation;
         heldRb.MoveRotation(targetRot);
     }
@@ -185,8 +157,6 @@ public class ObjectGrab : MonoBehaviour
         isPullingIn     = true;
         scrollOffset    = 0f;
     }
-
-    // -------- Следование --------
     private void FollowHoldPoint(float dt)
     {
         Vector3 currentPos = heldRb.position;
@@ -228,8 +198,6 @@ public class ObjectGrab : MonoBehaviour
             heldRb.MoveRotation(Quaternion.Slerp(heldRb.rotation, holdPoint.rotation, rt));
         }
     }
-
-    // -------- Заряд --------
     private void HandleCharge(Keyboard kb)
     {
         bool fHeld = kb.fKey.isPressed;
@@ -286,8 +254,6 @@ public class ObjectGrab : MonoBehaviour
             g.DOFade(targetAlpha, uiFadeDuration);
         }
     }
-
-    // -------- Отпускание --------
     private void ReleaseObject()
     {
         if (heldObject == null) return;

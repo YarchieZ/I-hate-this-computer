@@ -5,26 +5,16 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class BreakableObject : MonoBehaviour
 {
-    [Header("Настройки разрушения")]
     [SerializeField] private float breakSpeedThreshold = 5f;
     [SerializeField] private bool useRelativeVelocity = true;
     [SerializeField] private float checkCooldown = 0.05f;
-
     [SerializeField] private AudioClip audioClip;
-    
-    [Header("Тайминги")]
     [SerializeField] private float immunityDuration = 5f;
     [SerializeField] private float brokenFlagDelay = 1f;
     [SerializeField] private float disableComponentsDelay = 0f;
-
-    [Header("Компоненты для отключения при поломке")]
     [SerializeField] private MonoBehaviour[] componentsToDisable;
-
-    [Header("Материал при поломке")]
     [SerializeField] private Material brokenMaterial;
     [SerializeField] private List<Renderer> renderersToChangeMaterial = new List<Renderer>();
-
-    [Header("Состояние")]
     [SerializeField] private bool isBroken = false;
 
     public bool IsBroken => isBroken;

@@ -10,7 +10,7 @@ public class ClickInteractor : MonoBehaviour
 {
     [SerializeField] private Camera _camera;
     [SerializeField] private float _maxDistance = 100f;
-    [SerializeField] private LayerMask _layerMask = ~0; // по умолчанию всё
+    [SerializeField] private LayerMask _layerMask = ~0; 
 
     private void Awake()
     {
@@ -20,7 +20,6 @@ public class ClickInteractor : MonoBehaviour
 
     private void Update()
     {
-        // Обрабатываем только момент нажатия левой кнопки мыши
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             HandleClick(Mouse.current.position.ReadValue());
@@ -33,7 +32,6 @@ public class ClickInteractor : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, _maxDistance, _layerMask))
         {
-            // Проверяем тег на самом объекте или на родителях (удобно для вложенных моделей)
             if (TryGetInteractable(hit.collider, out IInteractable interactable))
             {
                 interactable.Interact();
@@ -44,8 +42,6 @@ public class ClickInteractor : MonoBehaviour
     private bool TryGetInteractable(Collider collider, out IInteractable interactable)
     {
         interactable = null;
-
-        // Ищем компонент, реализующий IInteractable, вверх по иерархии
         var behaviours = collider.GetComponentsInParent<MonoBehaviour>();
         foreach (var b in behaviours)
         {

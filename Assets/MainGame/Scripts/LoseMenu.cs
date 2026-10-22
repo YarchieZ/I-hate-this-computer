@@ -5,17 +5,11 @@ using DG.Tweening;
 
 public class LoseMenu : MonoBehaviour
 {
-    [Header("Панель проигрыша")]
     [SerializeField] private RectTransform losePanel;
-
-    [Header("Кнопка возврата в главное меню")]
     [SerializeField] private Button mainMenuButton;
-
-    [Header("Звуки")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip clickSound;
 
-    [Header("Настройки анимации")]
     [SerializeField] private float pressScale = 0.9f;
     [SerializeField] private float pressDuration = 0.1f;
     [SerializeField] private float popupDuration = 0.35f;
